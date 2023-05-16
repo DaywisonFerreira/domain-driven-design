@@ -9,10 +9,10 @@ export default class CustomerRepository implements CustomerRepositoryInterface {
     await CustomerModel.create({
       id: entity.id,
       name: entity.name,
-      street: entity.address.street,
-      number: entity.address.number,
-      zipcode: entity.address.zip,
-      city: entity.address.city,
+      street: entity.Address.street,
+      number: entity.Address.number,
+      zipcode: entity.Address.zip,
+      city: entity.Address.city,
       active: entity.isActive(),
       rewardPoints: entity.rewardPoints
     })
@@ -21,10 +21,10 @@ export default class CustomerRepository implements CustomerRepositoryInterface {
   async update(entity: Customer): Promise<void> {
     await CustomerModel.update({
       name: entity.name,
-      street: entity.address.street,
-      number: entity.address.number,
-      zipcode: entity.address.zip,
-      city: entity.address.city,
+      street: entity.Address.street,
+      number: entity.Address.number,
+      zipcode: entity.Address.zip,
+      city: entity.Address.city,
       active: entity.isActive(),
       rewardPoints: entity.rewardPoints
     }, {
@@ -49,7 +49,7 @@ export default class CustomerRepository implements CustomerRepositoryInterface {
       customerModel.zipcode,
       customerModel.city
     );
-    customer.address = address;
+    customer.Address = address;
     return customer;
   }
 
@@ -57,7 +57,7 @@ export default class CustomerRepository implements CustomerRepositoryInterface {
     const customerModels = await CustomerModel.findAll();
     const customers = customerModels.map((customerModels) => {
       let customer = new Customer(customerModels.id, customerModels.name);
-      customer.addRewardsPoints(customerModels.rewardPoints);
+      customer.addRewardPoints(customerModels.rewardPoints);
       const address = new Address(
         customerModels.street,
         customerModels.number,
@@ -65,7 +65,7 @@ export default class CustomerRepository implements CustomerRepositoryInterface {
         customerModels.city,
       )
       customer.changeAddress(address);
-      if(customer.active) {
+      if(customerModels.active) {
         customer.activate();
       }
       return customer;

@@ -1,24 +1,26 @@
+import Entity from "../../@shared/entity/entity.abstract";
 import Address from "../value-object/address";
+import NotificationError from "../../@shared/notification/notification.error";
+import CustomerValidatorFactory from "../factory/customer.validator.factory";
 
-export default class Customer {
-  private _id: string;
+export default class Customer extends Entity {
   private _name: string = "";
   private _address!: Address;
-  private _active: boolean = true;
+  private _active: boolean = false;
   private _rewardPoints: number = 0;
 
   constructor(id: string, name: string) {
+    super();
     this._id = id;
     this._name = name;
     this.validate();
+    if (this.notification.hasErrors()) {
+      throw new NotificationError(this.notification.getErrors());
+    }
   }
 
-  get id(): string {
-    return this._id;
-  }
-
-  get address(): Address {
-    return this._address;
+  get name(): string {
+    return this._name;
   }
 
   get rewardPoints(): number {
@@ -26,17 +28,7 @@ export default class Customer {
   }
 
   validate() {
-    if (this._id.length === 0) {
-      throw new Error("Id is required")
-    }
-
-    if (this._name.length === 0) {
-      throw new Error("Name is required")
-    }    
-  }
-
-  get active(): boolean {
-    return this._active;
+    CustomerValidatorFactory.create().validate(this);
   }
 
   changeName(name: string) {
@@ -44,22 +36,21 @@ export default class Customer {
     this.validate();
   }
 
+  get Address(): Address {
+    return this._address;
+  }
+
   changeAddress(address: Address) {
     this._address = address;
-    this.validate();
   }
 
-  get name(): string {
-    return this._name;
-  }
-
-  isActive() {
+  isActive(): boolean {
     return this._active;
   }
 
   activate() {
-    if(this._address === undefined) {
-      throw new Error("Address is mandatory to activate a customer")
+    if (this._address === undefined) {
+      throw new Error("Address is mandatory to activate a customer");
     }
     this._active = true;
   }
@@ -68,11 +59,11 @@ export default class Customer {
     this._active = false;
   }
 
-  addRewardsPoints(points: number) {
+  addRewardPoints(points: number) {
     this._rewardPoints += points;
   }
 
-  set address(address: Address) {
+  set Address(address: Address) {
     this._address = address;
   }
 }
